@@ -6,10 +6,8 @@ public class Main {
     final static boolean DEBUG = false;
 
     public static void main(String[] args) {
-        parseFile("16.alarm");
-        parseFile("15.alarm");
-        parseFile("14.alarm");
-        parseFile("13.alarm");
+        parseFile("21.alarm");
+        parseFile("22.alarm");
     }
 
     private static void parseFile(String string) {
@@ -18,8 +16,8 @@ public class Main {
         ParserOutput output = parser.parse(file);
 
         System.out.println("====" + string + "====");
-        // printHardwareUsageDistribution(output, string);
-        // printAverageNumEvent(output, string);
+        printHardwareUsageDistribution(output, string);
+        printAverageNumEvent(output, string);
         printAlignmentResult(output, string);
     }
 
@@ -36,6 +34,9 @@ public class Main {
                     if (a.hardwareUsage[j] != 0) {
                         if (hardwareUsageCount[j] != 0) {
                             // Align same hardware events.
+                            if (hardwareUsageCount[j] == 1) {
+                                hardwareUsageSta[j][0]++;
+                            }
                             hardwareUsageSta[j][0]++;
                         }
                         hardwareUsageCount[j]++;
