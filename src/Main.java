@@ -6,8 +6,9 @@ public class Main {
     final static boolean DEBUG = false;
 
     public static void main(String[] args) {
-        parseFile("21.alarm");
-        parseFile("22.alarm");
+        parseFile("13.alarm");
+        parseFile("14.alarm");
+        parseFile("15.alarm");
     }
 
     private static void parseFile(String string) {
@@ -32,12 +33,8 @@ public class Main {
             if (time == a.time) {
                 for (int j = 0; j < HardwareUsage.NUM_HARDWARE; j++) {
                     if (a.hardwareUsage[j] != 0) {
-                        if (hardwareUsageCount[j] != 0) {
-                            // Align same hardware events.
-                            if (hardwareUsageCount[j] == 1) {
-                                hardwareUsageSta[j][0]++;
-                            }
-                            hardwareUsageSta[j][0]++;
+                        if (hardwareUsageCount[j] == 0) {
+                        	hardwareUsageSta[j][0]++;
                         }
                         hardwareUsageCount[j]++;
                         hardwareUsageSta[j][1]++;
@@ -50,6 +47,7 @@ public class Main {
                 for (int j = 0; j < HardwareUsage.NUM_HARDWARE; j++) {
                     if (a.hardwareUsage[j] != 0) {
                         hardwareUsageCount[j]++;
+                        hardwareUsageSta[j][0]++;
                         hardwareUsageSta[j][1]++;
                     }
                 }
