@@ -20,4 +20,11 @@ public class Statistics {
             sum += a;
         return sum / numEvent.size();
     }
+    
+    public static float getSum(float[] value) {
+    	float sum = 0.0f;
+        for (float a : value)
+            sum += a;
+        return sum;
+    }
 }

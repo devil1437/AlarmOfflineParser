@@ -13,6 +13,10 @@ public class Alarm {
     public int[] hardwareUsage = new int[HardwareUsage.NUM_HARDWARE];
     public long lastFocus;
 
+    public boolean isWakeup(){
+    	return type == 0 || type == 2;
+    }
+    
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer(200);

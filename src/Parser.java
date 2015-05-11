@@ -6,18 +6,20 @@ import java.io.IOException;
 
 public class Parser {
     enum Mode {
-        DEFAULT, ALARM_STATS, WAKEUP_RECORD
+        DEFAULT, ALARM_MANAGER_STATS, ALARM_STATS, WAKEUP_RECORD
     }
 
     final static boolean DEBUG = false;
     final static int RECORD_LENGTH = 19;
 
     ParserOutput mOutput;
-
-    public ParserOutput parse(File file) {
+    private long mDuration;
+    
+    public ParserOutput parse(File file, long duration) {
         String line;
         Mode parseMode = Mode.DEFAULT;
         mOutput = new ParserOutput();
+        mDuration = duration;
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             while ((line = br.readLine()) != null) {
                 Mode mode = getMode(line);
@@ -47,6 +49,13 @@ public class Parser {
         switch (mode) {
             case DEFAULT:
                 break;
+            case ALARM_MANAGER_STATS:
+            	long time = parseEndTime(line);
+            	if (time != -1) {
+            		mOutput.mStartTime = time - mDuration;
+            		mOutput.mEndTime = time;
+            	}
+                break;
             case ALARM_STATS:
                 break;
             case WAKEUP_RECORD:
@@ -57,7 +66,19 @@ public class Parser {
         }
     }
 
-    private Alarm parseAlarm(final String line) {
+    private long parseEndTime(final String line) {
+    	// nowRTC=1431268849160=2015-05-10 22:40:49 nowELAPSED=3870036
+    	if(line.contains("nowRTC=") && line.contains("nowELAPSED=")){
+    		final String[] splits = line.split("=");
+    		long endTime = Long.parseLong(splits[1]);
+    		return endTime;
+    	}
+		return -1;
+	}
+
+	private Alarm parseAlarm(final String line) {
+		// Time: 1431266297780, Duration: 44, Delay: 17780, Window: 0, Interval: 0, Register2Trigger: 48002, Uid: 1000, Id: 1000android.intent.action.TIME_TICKnull, Type: 3, NetworkRec: 100, NetworkSnd: 184, NETWORK: 0, VIBRATION: 0, SOUND: 0, SCREEN: 0, AGPS: 0, GPS: 0, SENSOR_ACC: 0, LastFocus: -1
+
         final String[] splits = line.split(",");
         final int length = splits.length;
 
@@ -124,6 +145,8 @@ public class Parser {
     }
 
     private Mode getMode(final String line) {
+    	if (line.contains("Current Alarm Manager state:"))
+    		return Mode.ALARM_MANAGER_STATS;
         if (line.contains("Alarm Stats:"))
             return Mode.ALARM_STATS;
         if (line.contains("Recent Wakeup History:"))
