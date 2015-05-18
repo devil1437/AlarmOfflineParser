@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class Parser {
     enum Mode {
@@ -62,6 +63,9 @@ public class Parser {
                 Alarm a = parseAlarm(line);
                 if (a != null)
                     mOutput.addAlarm(a);
+                if (a != null && a.hardwareUsage[4] != 0) {
+                	System.out.println("Request, " + ((a.time - mOutput.mStartTime)/1000+13) + ", " + a.toString());
+                }
                 break;
         }
     }

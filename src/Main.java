@@ -7,10 +7,20 @@ public class Main {
     final private static boolean ENABLE_TIME_BOUNDARY = true;
     
     public static void main(String[] args) {
-        parseFile("33.alarm", 60 * 60 * 10000);
-        parseFile("34.alarm", 60 * 60 * 10000);
-        parseFile("35.alarm", 60 * 60 * 10000);
-        parseFile("36.alarm", 60 * 60 * 10000);
+//        parseFile("33.alarm", 60 * 60 * 1000);
+//        parseFile("34.alarm", 60 * 60 * 1000);
+        parseFile("41.alarm", 60 * 60 * 1000);
+        parseFile("42.alarm", 60 * 60 * 1000);
+        parseFile("52.alarm", 30 * 60 * 1000);
+        parseFile("tmp.alarm", 400 * 1000);
+        
+        System.out.println(1<<0);
+        System.out.println(1<<1);
+        System.out.println(1<<2);
+        System.out.println(1<<3);
+        
+        System.out.println((1<<3 | 1<<1));
+        System.out.println((1<<3 & 1<<1));
     }
 
     private static void parseFile(String string, long duration) {
