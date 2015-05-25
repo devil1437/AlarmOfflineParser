@@ -17,6 +17,10 @@ public class Alarm {
     	return type == 0 || type == 2;
     }
     
+    public boolean isPerceivable(){
+    	return hardwareUsage[1] != 0 || hardwareUsage[2] != 0 || hardwareUsage[3] != 0;
+    }
+    
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer(200);

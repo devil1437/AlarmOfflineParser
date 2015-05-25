@@ -9,18 +9,13 @@ public class Main {
     public static void main(String[] args) {
 //        parseFile("33.alarm", 60 * 60 * 1000);
 //        parseFile("34.alarm", 60 * 60 * 1000);
-        parseFile("41.alarm", 60 * 60 * 1000);
-        parseFile("42.alarm", 60 * 60 * 1000);
-        parseFile("52.alarm", 30 * 60 * 1000);
-        parseFile("tmp.alarm", 400 * 1000);
-        
-        System.out.println(1<<0);
-        System.out.println(1<<1);
-        System.out.println(1<<2);
-        System.out.println(1<<3);
-        
-        System.out.println((1<<3 | 1<<1));
-        System.out.println((1<<3 & 1<<1));
+//        parseFile("41.alarm", 60 * 60 * 1000);
+//        parseFile("42.alarm", 60 * 60 * 1000);
+//    	parseFile("3_4.alarm", 120 * 1000);
+//        parseFile("52.alarm", 30 * 60 * 1000);
+//        parseFile("3_1_Mine.alarm", 125 * 1000);
+//        parseFile("tmp.alarm", 760 * 1000);
+        parseFile("62.alarm", 30 * 60 * 1000);
     }
 
     private static void parseFile(String string, long duration) {
@@ -32,9 +27,32 @@ public class Main {
         printHardwareUsageDistribution(output, string);
         printAverageNumEvent(output, string);
         printAlignmentResult(output, string);
+        printPerformance(output, string);
     }
 
-    private static void printAlignmentResult(ParserOutput output, String string) {
+    private static void printPerformance(ParserOutput output, String string) {
+    	ArrayList<Alarm> alarms = output.mAlarms;
+        ArrayList<Integer> delay = new ArrayList<Integer>();
+
+        for (int i = 0; i < alarms.size(); i++) {
+            Alarm a = alarms.get(i);
+            if (ENABLE_TIME_BOUNDARY && !inBoundary(a, output.mStartTime, output.mEndTime)) {
+            	continue;
+            }
+            if (a.isPerceivable()) {
+            	if(DEBUG)	System.out.println("perceivable:" + a);
+            	delay.add((int) a.delay);
+            }
+        }
+
+        System.out.println("====" + string + "====Performance====");
+        System.out.println("Average: " + Statistics.getAverage(delay) + ", Std: "
+                + Statistics.getStd(delay));
+        System.out.println("number: " + delay.size());
+		
+	}
+
+	private static void printAlignmentResult(ParserOutput output, String string) {
         ArrayList<Alarm> alarms = output.mAlarms;
         int[] hardwareUsageCount = new int[HardwareUsage.NUM_HARDWARE];
         int[][] hardwareUsageSta = new int[HardwareUsage.NUM_HARDWARE][2];

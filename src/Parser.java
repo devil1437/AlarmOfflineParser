@@ -10,7 +10,7 @@ public class Parser {
         DEFAULT, ALARM_MANAGER_STATS, ALARM_STATS, WAKEUP_RECORD
     }
 
-    final static boolean DEBUG = false;
+    final static boolean DEBUG = true;
     final static int RECORD_LENGTH = 19;
 
     ParserOutput mOutput;
@@ -28,13 +28,6 @@ public class Parser {
 
                 parseLine(line, parseMode);
             }
-
-            if (DEBUG) {
-                for (int i = 0; i < mOutput.mAlarms.size(); i++) {
-                    System.out.println(mOutput.mAlarms.get(i).toString());
-                }
-            }
-
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -63,8 +56,8 @@ public class Parser {
                 Alarm a = parseAlarm(line);
                 if (a != null)
                     mOutput.addAlarm(a);
-                if (a != null && a.hardwareUsage[4] != 0) {
-                	System.out.println("Request, " + ((a.time - mOutput.mStartTime)/1000+13) + ", " + a.toString());
+                if (DEBUG && a != null) {
+                	System.out.println("Request, " + ((a.time - mOutput.mStartTime)/1000+15) + ", " + a.toString());
                 }
                 break;
         }
@@ -90,8 +83,6 @@ public class Parser {
             return null;
 
         if (length != RECORD_LENGTH) {
-            if (DEBUG)
-                System.err.println("Parse error: " + line);
             return null;
         }
 
