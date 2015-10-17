@@ -21,6 +21,25 @@ public class Alarm {
     	return hardwareUsage[1] != 0 || hardwareUsage[2] != 0 || hardwareUsage[3] != 0;
     }
     
+    public boolean isTimeTick(){
+    	return id.contains("1000android.intent.action.TIME_TICKnull");
+    }
+    
+    public boolean isAGPS(){
+    	return hardwareUsage[0] != 0;
+    }
+    
+    public boolean isNetwork(){
+    	return hardwareUsage[4] != 0;
+    }
+    
+    public boolean isCPU(){
+    	for(int i = 0; i < hardwareUsage.length; i++){
+    		if(hardwareUsage[i] != 0)	return false;
+    	}
+    	return true;
+    }
+    
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer(200);

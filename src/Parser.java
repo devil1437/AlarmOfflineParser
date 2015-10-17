@@ -15,12 +15,14 @@ public class Parser {
 
     ParserOutput mOutput;
     private long mDuration;
+    private long mOffset;
     
-    public ParserOutput parse(File file, long duration) {
+    public ParserOutput parse(File file, long duration, long offset) {
         String line;
         Mode parseMode = Mode.DEFAULT;
         mOutput = new ParserOutput();
         mDuration = duration;
+        mOffset = offset;
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             while ((line = br.readLine()) != null) {
                 Mode mode = getMode(line);
@@ -46,8 +48,8 @@ public class Parser {
             case ALARM_MANAGER_STATS:
             	long time = parseEndTime(line);
             	if (time != -1) {
-            		mOutput.mStartTime = time - mDuration;
-            		mOutput.mEndTime = time;
+            		mOutput.mStartTime = time - mDuration-mOffset;
+            		mOutput.mEndTime = time-mOffset;
             	}
                 break;
             case ALARM_STATS:
@@ -56,8 +58,9 @@ public class Parser {
                 Alarm a = parseAlarm(line);
                 if (a != null)
                     mOutput.addAlarm(a);
-                if (DEBUG && a != null) {
-                	System.out.println("Request, " + ((a.time - mOutput.mStartTime)/1000+15) + ", " + a.toString());
+                if (DEBUG && a != null /* && ((a.time - mOutput.mStartTime)/1000) < 40000*/) {
+//                	if(a.id.contains("10098com.facebook.rti.mqtt.keepalive.KeepaliveManager.ACTION_INEXACT_ALARM.MqttLite.com.facebook.katananull"))
+                		System.out.println("Request, " + ((a.time - mOutput.mStartTime)/1000) + ", " + a.toString());
                 }
                 break;
         }
@@ -98,44 +101,46 @@ public class Parser {
     private void parseAlarmAttribute(Alarm a, final String string) {
         String[] splits = string.trim().split(" ");
 
-        if (splits[0].equals("Time:")) {
-            a.time = Long.parseLong(splits[1]);
-        } else if (splits[0].equals("Duration:")) {
-            a.duration = Long.parseLong(splits[1]);
-        } else if (splits[0].equals("Delay:")) {
-            a.delay = Long.parseLong(splits[1]);
-        } else if (splits[0].equals("Window:")) {
-            a.window = Long.parseLong(splits[1]);
-        } else if (splits[0].equals("Interval:")) {
-            a.interval = Long.parseLong(splits[1]);
-        } else if (splits[0].equals("Register2Trigger:")) {
-            a.register2Trigger = Long.parseLong(splits[1]);
-        } else if (splits[0].equals("Uid:")) {
-            a.uid = Integer.parseInt(splits[1]);
-        } else if (splits[0].equals("Id:")) {
-            a.id = splits[1];
-        } else if (splits[0].equals("Type:")) {
-            a.type = Integer.parseInt(splits[1]);
-        } else if (splits[0].equals("NetworkRec:")) {
-            a.networkRcv = Integer.parseInt(splits[1]);
-        } else if (splits[0].equals("NetworkSnd:")) {
-            a.networkSnd = Integer.parseInt(splits[1]);
-        } else if (splits[0].equals("NETWORK:")) {
-            a.hardwareUsage[0] = Integer.parseInt(splits[1]);
-        } else if (splits[0].equals("VIBRATION:")) {
-            a.hardwareUsage[1] = Integer.parseInt(splits[1]);
-        } else if (splits[0].equals("SOUND:")) {
-            a.hardwareUsage[2] = Integer.parseInt(splits[1]);
-        } else if (splits[0].equals("SCREEN:")) {
-            a.hardwareUsage[3] = Integer.parseInt(splits[1]);
-        } else if (splits[0].equals("AGPS:")) {
-            a.hardwareUsage[4] = Integer.parseInt(splits[1]);
-        } else if (splits[0].equals("GPS:")) {
-            a.hardwareUsage[5] = Integer.parseInt(splits[1]);
-        } else if (splits[0].equals("SENSOR_ACC:")) {
-            a.hardwareUsage[6] = Integer.parseInt(splits[1]);
-        } else if (splits[0].equals("LastFocus:")) {
-            a.lastFocus = Long.parseLong(splits[1]);
+        for(int i = 0; i < splits.length-1; i++){
+	        if (splits[i].equals("Time:")) {
+	            a.time = Long.parseLong(splits[i+1]);
+	        } else if (splits[i].equals("Duration:")) {
+	            a.duration = Long.parseLong(splits[i+1]);
+	        } else if (splits[i].equals("Delay:")) {
+	            a.delay = Long.parseLong(splits[i+1]);
+	        } else if (splits[i].equals("Window:")) {
+	            a.window = Long.parseLong(splits[i+1]);
+	        } else if (splits[i].equals("Interval:")) {
+	            a.interval = Long.parseLong(splits[i+1]);
+	        } else if (splits[i].equals("Register2Trigger:")) {
+	            a.register2Trigger = Long.parseLong(splits[i+1]);
+	        } else if (splits[i].equals("Uid:")) {
+	            a.uid = Integer.parseInt(splits[i+1]);
+	        } else if (splits[i].equals("Id:")) {
+	            a.id = splits[i+1];
+	        } else if (splits[i].equals("Type:")) {
+	            a.type = Integer.parseInt(splits[i+1]);
+	        } else if (splits[i].equals("NetworkRec:")) {
+	            a.networkRcv = Integer.parseInt(splits[i+1]);
+	        } else if (splits[i].equals("NetworkSnd:")) {
+	            a.networkSnd = Integer.parseInt(splits[i+1]);
+	        } else if (splits[i].equals("NETWORK:")) {
+	            a.hardwareUsage[0] = Integer.parseInt(splits[i+1]);
+	        } else if (splits[i].equals("VIBRATION:")) {
+	            a.hardwareUsage[1] = Integer.parseInt(splits[i+1]);
+	        } else if (splits[i].equals("SOUND:")) {
+	            a.hardwareUsage[2] = Integer.parseInt(splits[i+1]);
+	        } else if (splits[i].equals("SCREEN:")) {
+	            a.hardwareUsage[3] = Integer.parseInt(splits[i+1]);
+	        } else if (splits[i].equals("AGPS:")) {
+	            a.hardwareUsage[4] = Integer.parseInt(splits[i+1]);
+	        } else if (splits[i].equals("GPS:")) {
+	            a.hardwareUsage[5] = Integer.parseInt(splits[i+1]);
+	        } else if (splits[i].equals("SENSOR_ACC:")) {
+	            a.hardwareUsage[6] = Integer.parseInt(splits[i+1]);
+	        } else if (splits[i].equals("LastFocus:")) {
+	            a.lastFocus = Long.parseLong(splits[i+1]);
+	        }
         }
     }
 
